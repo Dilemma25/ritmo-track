@@ -5,7 +5,6 @@ import (
 	"ritmotrack-backend/internal/core/config"
 	repoInterface "ritmotrack-backend/internal/domain/repository"
 	repoImpl "ritmotrack-backend/internal/infrastructure/db/repository"
-	httpLayer "ritmotrack-backend/internal/presentation/http/controller"
 )
 
 func CreateContainer() *Container {
@@ -37,36 +36,12 @@ func injectRepositories(container *Container) {
 
 // application
 func injectUseCases(container *Container) {
-	container.Provide(func(r repoInterface.UserRepository) usecase.UserCreateUseCase {
-		return usecase.UserCreateUseCase{
-			Repo: r,
-		}
-	})
-
-	container.Provide(func(r repoInterface.UserRepository) usecase.UserGetByIDUseCase {
-		return usecase.UserGetByIDUseCase{
-			Repo: r,
-		}
-	})
-
-	container.Provide(func(r repoInterface.UserRepository) usecase.UserGetAllUseCase {
-		return usecase.UserGetAllUseCase{
-			Repo: r,
-		}
-	})
+	container.Provide(usecase.NewUserCreateUseCase)
+	container.Provide(usecase.NewUserGetByIDUseCase)
+	container.Provide(usecase.NewUserGetAllUseCase)
 }
 
 // presentation
 func injectControllers(container *Container) {
-	container.Provide(func(
-		userCreateUseCase usecase.UserCreateUseCase,
-		userGetByIdUseCase usecase.UserGetByIDUseCase,
-		userGetAllUseCase usecase.UserGetAllUseCase,
-	) *httpLayer.UserController {
-		return &httpLayer.UserController{
-			UserCreateUseCase:  userCreateUseCase,
-			UserGetByIDUseCase: userGetByIdUseCase,
-			UserGetAllUseCase:  userGetAllUseCase,
-		}
-	})
+	container.Provide(usecase.NewUserCreateUseCase)
 }

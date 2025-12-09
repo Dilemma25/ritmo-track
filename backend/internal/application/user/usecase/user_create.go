@@ -12,6 +12,10 @@ type UserCreateUseCase struct {
 	Repo repository.UserRepository
 }
 
+func NewUserCreateUseCase(repo repository.UserRepository) *UserCreateUseCase {
+	return &UserCreateUseCase{Repo: repo}
+}
+
 func (ths UserCreateUseCase) Execute(ctx context.Context, data dto.CreateUserDTO) (dto.UserOutputDTO, error) {
 	user := entity.User{
 		Name:      data.Name,

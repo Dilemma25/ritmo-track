@@ -15,9 +15,21 @@ import (
 )
 
 type UserController struct {
-	UserCreateUseCase  usecase.UserCreateUseCase
-	UserGetByIDUseCase usecase.UserGetByIDUseCase
-	UserGetAllUseCase  usecase.UserGetAllUseCase
+	UserCreateUseCase  *usecase.UserCreateUseCase
+	UserGetByIDUseCase *usecase.UserGetByIDUseCase
+	UserGetAllUseCase  *usecase.UserGetAllUseCase
+}
+
+func NewUserController(
+	userCreateUseCase *usecase.UserCreateUseCase,
+	userGetByIDUseCase *usecase.UserGetByIDUseCase,
+	userGetAllUseCase *usecase.UserGetAllUseCase,
+) *UserController {
+	return &UserController{
+		UserCreateUseCase:  userCreateUseCase,
+		UserGetByIDUseCase: userGetByIDUseCase,
+		UserGetAllUseCase:  userGetAllUseCase,
+	}
 }
 
 func (ths *UserController) GetAll(w http.ResponseWriter, r *http.Request) {

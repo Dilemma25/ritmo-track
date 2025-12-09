@@ -10,6 +10,10 @@ type UserGetAllUseCase struct {
 	Repo repository.UserRepository
 }
 
+func NewUserGetAllUseCase(repo repository.UserRepository) *UserGetAllUseCase {
+	return &UserGetAllUseCase{Repo: repo}
+}
+
 func (ths *UserGetAllUseCase) Execute(ctx context.Context) (dto.GetAllUsersDTO, error) {
 	users, _ := ths.Repo.GetAll(ctx)
 
