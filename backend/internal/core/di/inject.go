@@ -5,6 +5,7 @@ import (
 	"ritmotrack-backend/internal/core/config"
 	repoInterface "ritmotrack-backend/internal/domain/repository"
 	repoImpl "ritmotrack-backend/internal/infrastructure/db/repository"
+	"ritmotrack-backend/internal/presentation/http/controller"
 )
 
 func CreateContainer() *Container {
@@ -43,5 +44,5 @@ func injectUseCases(container *Container) {
 
 // presentation
 func injectControllers(container *Container) {
-	container.Provide(usecase.NewUserCreateUseCase)
+	container.Provide(controller.NewUserController)
 }
