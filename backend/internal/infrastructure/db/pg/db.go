@@ -1,19 +1,19 @@
 package pg
 
 import (
-	"database/sql"
 	"fmt"
 	"ritmotrack-backend/internal/infrastructure/config"
 	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/jmoiron/sqlx"
 )
 
 type DB struct {
-	db *sql.DB
+	db *sqlx.DB
 }
 
-func (ths *DB) GetDB() *sql.DB {
+func (ths *DB) GetDB() *sqlx.DB {
 	return ths.db
 }
 
@@ -23,19 +23,16 @@ func NewPostgresDB(cfg *config.Config) (*DB, error) {
 		cfg.DbUser, cfg.DbPassword, cfg.DbHost, cfg.DbPort, cfg.DbName,
 	)
 
-	// используем драйвер "pgx"
-	conn, err := sql.Open("pgx", dsn)
+	conn, err := sqlx.Open("pgx", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open DB: %w", err)
 	}
 
-	// Настройки пула соединений
 	conn.SetMaxOpenConns(25)
 	conn.SetMaxIdleConns(25)
 	conn.SetConnMaxLifetime(5 * time.Minute)
 
-	// Проверка соединения
-	if err := conn.Ping(); err != nil {
+	if err = conn.Ping(); err != nil {
 		return nil, fmt.Errorf("failed to ping DB: %w", err)
 	}
 
