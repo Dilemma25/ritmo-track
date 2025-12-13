@@ -1,18 +1,16 @@
 package boostrap
 
 import (
-	"ritmotrack-backend/internal/core/config"
-	"ritmotrack-backend/internal/core/di"
+	"ritmotrack-backend/internal/infrastructure/config"
 	httpLayer "ritmotrack-backend/internal/presentation/http"
 )
 
 func Start() {
-	container := di.CreateContainer()
 
-	container.Invoke(func(config *config.Config) {
+	GetContainer().Invoke(func(config *config.Config) {
 		server := httpLayer.NewServer()
 
-		httpLayer.RegisterRouters(server.Router(), container)
+		httpLayer.RegisterRouters(server.Router(), GetContainer())
 
 		server.Start(config.Port)
 	})

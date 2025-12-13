@@ -9,11 +9,11 @@ import (
 )
 
 type UserCreateUseCase struct {
-	Repo repository.UserRepository
+	repo repository.UserRepository
 }
 
 func NewUserCreateUseCase(repo repository.UserRepository) *UserCreateUseCase {
-	return &UserCreateUseCase{Repo: repo}
+	return &UserCreateUseCase{repo: repo}
 }
 
 func (ths UserCreateUseCase) Execute(ctx context.Context, data dto.CreateUserDTO) (dto.UserOutputDTO, error) {
@@ -24,7 +24,7 @@ func (ths UserCreateUseCase) Execute(ctx context.Context, data dto.CreateUserDTO
 		CreatedAt: time.Now(),
 	}
 
-	newUser, _ := ths.Repo.Create(ctx, user)
+	newUser, _ := ths.repo.Create(ctx, user)
 
 	newUserDTO := dto.UserOutputDTO{
 		Id:    newUser.Id,

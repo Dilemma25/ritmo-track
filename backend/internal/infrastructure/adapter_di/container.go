@@ -1,4 +1,4 @@
-package di
+package adapter_di
 
 import (
 	"log"

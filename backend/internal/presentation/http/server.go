@@ -25,7 +25,6 @@ func (s *Server) Router() *chi.Mux {
 
 func (s *Server) Start(port string) {
 	log.Printf("Server is running on port %s", port)
-
 	if err := http.ListenAndServe(":"+port, s.router); err != nil {
 		log.Fatalf("failed to start server: %v", err)
 	}

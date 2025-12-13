@@ -7,15 +7,15 @@ import (
 )
 
 type UserGetAllUseCase struct {
-	Repo repository.UserRepository
+	repo repository.UserRepository
 }
 
 func NewUserGetAllUseCase(repo repository.UserRepository) *UserGetAllUseCase {
-	return &UserGetAllUseCase{Repo: repo}
+	return &UserGetAllUseCase{repo: repo}
 }
 
 func (ths *UserGetAllUseCase) Execute(ctx context.Context) (dto.GetAllUsersDTO, error) {
-	users, _ := ths.Repo.GetAll(ctx)
+	users, _ := ths.repo.GetAll(ctx)
 
 	usersDTO := dto.GetAllUsersDTO{
 		Users: make([]dto.UserOutputDTO, 0, len(users)),

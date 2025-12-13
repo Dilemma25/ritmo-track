@@ -7,15 +7,15 @@ import (
 )
 
 type UserGetByIDUseCase struct {
-	Repo repository.UserRepository
+	repo repository.UserRepository
 }
 
 func NewUserGetByIDUseCase(repo repository.UserRepository) *UserGetByIDUseCase {
-	return &UserGetByIDUseCase{Repo: repo}
+	return &UserGetByIDUseCase{repo: repo}
 }
 
 func (ths *UserGetByIDUseCase) Execute(ctx context.Context, id int64) (dto.UserOutputDTO, error) {
-	user, _ := ths.Repo.GetById(ctx, id)
+	user, _ := ths.repo.GetById(ctx, id)
 
 	userDTO := dto.UserOutputDTO{
 		Id:    user.Id,
