@@ -2,6 +2,7 @@ package validator
 
 import (
 	"fmt"
+	"log"
 	"regexp"
 
 	"github.com/go-playground/validator/v10"
@@ -14,14 +15,18 @@ type Validator struct {
 func New() *Validator {
 	v := validator.New()
 
-	err := v.RegisterValidation("regex", regexValidation)
-
-	if err != nil {
-		panic(err)
+	vWrapper := &Validator{
+		validate: v,
 	}
 
-	return &Validator{
-		validate: v,
+	vWrapper.RegisterValidation("regex", regexValidation)
+
+	return vWrapper
+}
+
+func (ths *Validator) RegisterValidation(tag string, fn validator.Func) {
+	if err := ths.validate.RegisterValidation(tag, fn); err != nil {
+		log.Fatalf("failed to registration validation: %v", err)
 	}
 }
 
