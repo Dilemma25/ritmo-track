@@ -1,11 +1,11 @@
-package utils
+package writer
 
 import (
 	"encoding/json"
 	"net/http"
 )
 
-func ResponseJSON(w http.ResponseWriter, status int, data interface{}) {
+func WriteResponseJSON(w http.ResponseWriter, status int, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	if err := json.NewEncoder(w).Encode(data); err != nil {
@@ -13,10 +13,10 @@ func ResponseJSON(w http.ResponseWriter, status int, data interface{}) {
 	}
 }
 
-func ResponseError(w http.ResponseWriter, status int, err error) {
+func WriteErrorJSON(w http.ResponseWriter, status int, err error) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	if err := json.NewEncoder(w).Encode(map[string]string{"error": err.Error()}); err != nil {
+	if err = json.NewEncoder(w).Encode(map[string]string{"error": err.Error()}); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }

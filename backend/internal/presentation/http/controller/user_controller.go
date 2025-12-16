@@ -1,23 +1,23 @@
 package controller
 
 import (
-	"encoding/json"
 	"fmt"
+	"net/http"
 	"ritmotrack-backend/internal/application/user/dto"
-	"ritmotrack-backend/internal/presentation/http/sheme"
-	"ritmotrack-backend/internal/presentation/http/utils"
-	"strconv"
+	"ritmotrack-backend/internal/application/user/usecase"
+	"ritmotrack-backend/internal/presentation/http/parser"
+	"ritmotrack-backend/internal/presentation/http/request"
+	"ritmotrack-backend/internal/presentation/http/validator"
+	"ritmotrack-backend/internal/presentation/http/writer"
 
 	"github.com/go-chi/chi/v5"
-
-	"net/http"
-	"ritmotrack-backend/internal/application/user/usecase"
 )
 
 type UserController struct {
 	UserCreateUseCase  *usecase.UserCreateUseCase
 	UserGetByIDUseCase *usecase.UserGetByIDUseCase
 	UserGetAllUseCase  *usecase.UserGetAllUseCase
+	validator          *validator.Validator
 }
 
 func NewUserController(
@@ -29,36 +29,44 @@ func NewUserController(
 		UserCreateUseCase:  userCreateUseCase,
 		UserGetByIDUseCase: userGetByIDUseCase,
 		UserGetAllUseCase:  userGetAllUseCase,
+		validator:          validator.New(),
 	}
 }
 
 func (ths *UserController) GetAll(w http.ResponseWriter, r *http.Request) {
 	users, _ := ths.UserGetAllUseCase.Execute(r.Context())
 
-	utils.ResponseJSON(w, http.StatusOK, users)
+	writer.WriteResponseJSON(w, http.StatusOK, users)
 }
 
 func (ths *UserController) GetByID(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 
-	//TODO вынести парсинг id в utils
-	idInt, err := strconv.ParseInt(idStr, 10, 32)
+	idInt, err := parser.ParseInt(idStr)
 
 	if err != nil {
-		utils.ResponseError(w, http.StatusBadRequest, fmt.Errorf("invalid id"))
+		writer.WriteErrorJSON(w, http.StatusBadRequest, fmt.Errorf("invalid id"))
 		return
 	}
 
 	user, _ := ths.UserGetByIDUseCase.Execute(r.Context(), idInt)
 
-	utils.ResponseJSON(w, http.StatusOK, user)
+	writer.WriteResponseJSON(w, http.StatusOK, user)
 }
 
 func (ths *UserController) Create(w http.ResponseWriter, r *http.Request) {
-	var req sheme.UserCreateRequest
+	var req request.UserCreateRequest
 
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		utils.ResponseError(w, http.StatusBadRequest, fmt.Errorf("invalid json"))
+	if err := parser.ParseRequestBody(r, &req); err != nil {
+		writer.WriteErrorJSON(w, http.StatusBadRequest, err)
+
+		return
+	}
+
+	if errs := ths.validator.ValidateStruct(&req); len(errs) > 0 {
+		for _, err := range errs {
+			writer.WriteErrorJSON(w, http.StatusBadRequest, fmt.Errorf(err))
+		}
 		return
 	}
 
@@ -70,9 +78,9 @@ func (ths *UserController) Create(w http.ResponseWriter, r *http.Request) {
 
 	user, err := ths.UserCreateUseCase.Execute(r.Context(), userDTO)
 	if err != nil {
-		utils.ResponseError(w, http.StatusInternalServerError, err)
+		writer.WriteErrorJSON(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	utils.ResponseJSON(w, http.StatusOK, user)
+	writer.WriteResponseJSON(w, http.StatusOK, user)
 }
