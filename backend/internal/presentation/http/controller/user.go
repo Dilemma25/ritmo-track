@@ -5,10 +5,11 @@ import (
 	"ritmotrack-backend/internal/application/dto"
 	userUseCase "ritmotrack-backend/internal/application/usecase/user"
 	"ritmotrack-backend/internal/presentation/http/apierror"
-	"ritmotrack-backend/internal/presentation/http/parser"
+	//"ritmotrack-backend/internal/presentation/http/parser"
 	"ritmotrack-backend/internal/presentation/http/responder"
 	"ritmotrack-backend/internal/presentation/http/shema"
 	"ritmotrack-backend/internal/presentation/http/validator"
+	"strconv"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -46,14 +47,14 @@ func (ths *UserController) GetAll(w http.ResponseWriter, r *http.Request) {
 func (ths *UserController) GetByID(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 
-	idInt, err := parser.ParseInt(idStr)
+	idUint, err := strconv.ParseUint(idStr, 10, 32)
 
 	if err != nil {
 		ths.responder.ResponseError(w, apierror.NewErrInvalidUrlParameter(err))
 		return
 	}
 
-	user, _ := ths.UserGetByIDUseCase.Execute(r.Context(), idInt)
+	user, _ := ths.UserGetByIDUseCase.Execute(r.Context(), uint(idUint))
 
 	ths.responder.ResponseOk(w, user)
 }
