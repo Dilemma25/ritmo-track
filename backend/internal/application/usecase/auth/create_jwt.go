@@ -9,7 +9,7 @@ import (
 )
 
 type CreateJwtUseCase interface {
-	Execute(context.Context, dto.CreateJwtDTO) (*dto.JwtOutputDTO, error)
+	Execute(context.Context, dto.CreateJwtDTO) (*dto.JwtDTO, error)
 }
 
 type createJwtUseCase struct {
@@ -21,7 +21,7 @@ func NewCreateJwtUseCase(jwtProvider provider.JwtProvider, repo repository.UserR
 	return &createJwtUseCase{jwtProvider: jwtProvider, repo: repo}
 }
 
-func (ths *createJwtUseCase) Execute(ctx context.Context, data dto.CreateJwtDTO) (*dto.JwtOutputDTO, error) {
+func (ths *createJwtUseCase) Execute(ctx context.Context, data dto.CreateJwtDTO) (*dto.JwtDTO, error) {
 	user, err := ths.repo.GetByLogin(ctx, data.Login)
 
 	if err != nil {

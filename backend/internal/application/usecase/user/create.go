@@ -23,15 +23,15 @@ func NewUserCreateUseCase(
 	}
 }
 
-func (ths CreateUserUseCase) Execute(ctx context.Context, data userDTO.CreateUserDTO) (userDTO.UserOutputDTO, error) {
+func (ths CreateUserUseCase) Execute(ctx context.Context, data userDTO.CreateUserDTO) (*userDTO.UserDTO, error) {
 
 	user := entity.NewUser(data.Name, data.Login, ths.hasher.Hash(data.Password))
 
 	if err := ths.repo.Create(ctx, user); err != nil {
-		return userDTO.UserOutputDTO{}, err
+		return nil, err
 	}
 
-	newUserDTO := userDTO.UserOutputDTO{
+	newUserDTO := &userDTO.UserDTO{
 		Id:        user.GetId(),
 		Name:      user.GetName(),
 		Login:     user.GetLogin(),

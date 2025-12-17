@@ -80,6 +80,6 @@ func (ths UserRepository) GetAll(ctx context.Context) ([]*entity.User, error) {
 	return users, nil
 }
 
-func (ths UserRepository) GetById(ctx context.Context, id int64) (*entity.User, error) {
+func (ths UserRepository) GetById(ctx context.Context, id uint) (*entity.User, error) {
 	return entity.NewUser("test1", "test1", ""), nil
 }

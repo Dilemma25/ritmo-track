@@ -5,7 +5,7 @@ type CreateJwtDTO struct {
 	Password string `json:"password"`
 }
 
-type JwtOutputDTO struct {
+type JwtDTO struct {
 	AccessToken string `json:"access_token"`
 }
 

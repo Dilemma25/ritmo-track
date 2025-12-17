@@ -14,15 +14,13 @@ func NewUserGetAllUseCase(repo repository.UserRepository) *GetAllUsersUseCase {
 	return &GetAllUsersUseCase{repo: repo}
 }
 
-func (ths *GetAllUsersUseCase) Execute(ctx context.Context) (userDTO.GetAllUsersDTO, error) {
+func (ths *GetAllUsersUseCase) Execute(ctx context.Context) ([]*userDTO.UserDTO, error) {
 	users, _ := ths.repo.GetAll(ctx)
 
-	usersDTO := userDTO.GetAllUsersDTO{
-		Users: make([]userDTO.UserOutputDTO, 0, len(users)),
-	}
+	var usersDTO []*userDTO.UserDTO
 
 	for _, user := range users {
-		usersDTO.Users = append(usersDTO.Users, userDTO.UserOutputDTO{
+		usersDTO = append(usersDTO, &userDTO.UserDTO{
 			Id:    user.GetId(),
 			Name:  user.GetName(),
 			Login: user.GetLogin(),

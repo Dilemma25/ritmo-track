@@ -24,7 +24,7 @@ func NewJwtProvider(config *config.Config) provider.JwtProvider {
 	}
 }
 
-func (ths *jwtProvider) CreateToken(userId uint) (*dto.JwtOutputDTO, error) {
+func (ths *jwtProvider) CreateToken(userId uint) (*dto.JwtDTO, error) {
 	expiresAt := time.Now().Add(time.Duration(ths.config.JwtTTL) * time.Second)
 
 	claims := jwtClaims{
@@ -43,7 +43,7 @@ func (ths *jwtProvider) CreateToken(userId uint) (*dto.JwtOutputDTO, error) {
 		return nil, err
 	}
 
-	return &dto.JwtOutputDTO{
+	return &dto.JwtDTO{
 		AccessToken: tokenString,
 	}, nil
 }

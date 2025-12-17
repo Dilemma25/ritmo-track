@@ -8,6 +8,6 @@ import (
 type UserRepository interface {
 	Create(ctx context.Context, user *entity.User) error
 	GetAll(ctx context.Context) ([]*entity.User, error)
-	GetById(ctx context.Context, id int64) (*entity.User, error)
+	GetById(ctx context.Context, id uint) (*entity.User, error)
 	GetByLogin(ctx context.Context, login string) (*entity.User, error)
 }

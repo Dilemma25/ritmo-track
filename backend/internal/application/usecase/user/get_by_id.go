@@ -14,10 +14,10 @@ func NewUserGetByIDUseCase(repo repository.UserRepository) *GetUserByIDUseCase {
 	return &GetUserByIDUseCase{repo: repo}
 }
 
-func (ths *GetUserByIDUseCase) Execute(ctx context.Context, id int64) (dto.UserOutputDTO, error) {
+func (ths *GetUserByIDUseCase) Execute(ctx context.Context, id uint) (*dto.UserDTO, error) {
 	user, _ := ths.repo.GetById(ctx, id)
 
-	userDTO := dto.UserOutputDTO{
+	userDTO := &dto.UserDTO{
 		Id:    user.GetId(),
 		Name:  user.GetName(),
 		Login: user.GetLogin(),
