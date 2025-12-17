@@ -1,5 +1,7 @@
 package dto
 
+import "time"
+
 type CreateUserDTO struct {
 	Name     string `json:"username"`
 	Login    string `json:"login"`
@@ -7,9 +9,10 @@ type CreateUserDTO struct {
 }
 
 type UserOutputDTO struct {
-	Id    int64  `json:"id"`
-	Name  string `json:"username"`
-	Login string `json:"login"`
+	Id        uint      `json:"id"`
+	Name      string    `json:"username"`
+	Login     string    `json:"login"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type GetAllUsersDTO struct {

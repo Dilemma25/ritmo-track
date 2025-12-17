@@ -1,40 +1,37 @@
 package pg
 
 import (
+	"context"
 	"fmt"
 	"ritmotrack-backend/internal/infrastructure/config"
-	"time"
 
-	_ "github.com/jackc/pgx/v5/stdlib"
-	"github.com/jmoiron/sqlx"
+	sq "github.com/Masterminds/squirrel"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type DB struct {
-	db *sqlx.DB
+type MainDB struct {
+	pgxPool *pgxpool.Pool
+	sq      sq.StatementBuilderType
 }
 
-func (ths *DB) GetDB() *sqlx.DB {
-	return ths.db
+func (ths *MainDB) GetPool() *pgxpool.Pool {
+	return ths.pgxPool
 }
 
-func NewPostgresDB(cfg *config.Config) (*DB, error) {
-	dsn := fmt.Sprintf(
-		"postgres://%s:%s@%s:%s/%s",
-		cfg.DbUser, cfg.DbPassword, cfg.DbHost, cfg.DbPort, cfg.DbName,
-	)
+func (ths *MainDB) GetSq() sq.StatementBuilderType { return ths.sq }
 
-	conn, err := sqlx.Open("pgx", dsn)
+func NewMainDB(cfg *config.Config) (*MainDB, error) {
+	pool, err := pgxpool.New(context.Background(), fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=UTC",
+		cfg.DbHost, cfg.DbUser, cfg.DbPassword, cfg.DbName, cfg.DbPort,
+	))
+
 	if err != nil {
-		return nil, fmt.Errorf("failed to open DB: %w", err)
+		return nil, fmt.Errorf("failed to connect to PG: %w", err)
 	}
 
-	conn.SetMaxOpenConns(25)
-	conn.SetMaxIdleConns(25)
-	conn.SetConnMaxLifetime(5 * time.Minute)
-
-	if err = conn.Ping(); err != nil {
-		return nil, fmt.Errorf("failed to ping DB: %w", err)
-	}
-
-	return &DB{db: conn}, nil
+	return &MainDB{
+		pgxPool: pool,
+		sq:      sq.StatementBuilder.PlaceholderFormat(sq.Dollar),
+	}, nil
 }

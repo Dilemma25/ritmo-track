@@ -2,7 +2,7 @@ package cli
 
 import (
 	"fmt"
-	"ritmotrack-backend/internal/application/migration/usecase"
+	"ritmotrack-backend/internal/application/usecase/migration"
 )
 
 type MigrationCommandController interface {
@@ -10,11 +10,11 @@ type MigrationCommandController interface {
 }
 
 type migrationCommandController struct {
-	upgradeMigrationUseCase usecase.UpgradeMigrationUseCase
+	upgradeMigrationUseCase migration.UpgradeMigrationUseCase
 }
 
 func NewMigrationCommandController(
-	upgradeMigrationUseCase usecase.UpgradeMigrationUseCase,
+	upgradeMigrationUseCase migration.UpgradeMigrationUseCase,
 ) MigrationCommandController {
 	return migrationCommandController{
 		upgradeMigrationUseCase: upgradeMigrationUseCase,

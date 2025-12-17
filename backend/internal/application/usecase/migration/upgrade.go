@@ -1,4 +1,4 @@
-package usecase
+package migration
 
 import "ritmotrack-backend/internal/application/provider"
 

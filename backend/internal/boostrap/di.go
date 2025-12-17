@@ -2,8 +2,9 @@ package boostrap
 
 import (
 	"log"
-	migrationUseCase "ritmotrack-backend/internal/application/migration/usecase"
-	userUseCase "ritmotrack-backend/internal/application/user/usecase"
+	"ritmotrack-backend/internal/application/usecase/auth"
+	migrationUseCase "ritmotrack-backend/internal/application/usecase/migration"
+	"ritmotrack-backend/internal/application/usecase/user"
 	"ritmotrack-backend/internal/infrastructure/adapter_di"
 	"ritmotrack-backend/internal/infrastructure/config"
 	"ritmotrack-backend/internal/infrastructure/db/pg"
@@ -11,6 +12,9 @@ import (
 	"ritmotrack-backend/internal/infrastructure/provider"
 	"ritmotrack-backend/internal/presentation/cli"
 	"ritmotrack-backend/internal/presentation/http/controller"
+	"ritmotrack-backend/internal/presentation/http/middleware"
+	"ritmotrack-backend/internal/presentation/http/responder"
+	"ritmotrack-backend/internal/presentation/http/validator"
 )
 
 var container *adapter_di.Container
@@ -36,7 +40,8 @@ func CreateContainer() *adapter_di.Container {
 	injectUseCases(container)
 
 	//presentation
-	injectServerControllers(container)
+	injectMiddlewares(container)
+	injectHttpControllers(container)
 	injectCliControllers(container)
 
 	log.Println("DI container created")
@@ -50,11 +55,15 @@ func injectConfigs(container *adapter_di.Container) {
 }
 
 func injectDB(container *adapter_di.Container) {
-	container.Provide(pg.NewPostgresDB)
+	container.Provide(pg.NewMainDB)
 }
 
 func injectProviders(container *adapter_di.Container) {
 	container.Provide(provider.NewMigrationProvider)
+
+	container.Provide(provider.NewHasherProvider)
+
+	container.Provide(provider.NewJwtProvider)
 }
 
 func injectRepositories(container *adapter_di.Container) {
@@ -63,16 +72,28 @@ func injectRepositories(container *adapter_di.Container) {
 
 // application
 func injectUseCases(container *adapter_di.Container) {
-	container.Provide(userUseCase.NewUserCreateUseCase)
-	container.Provide(userUseCase.NewUserGetByIDUseCase)
-	container.Provide(userUseCase.NewUserGetAllUseCase)
+	container.Provide(user.NewUserCreateUseCase)
+	container.Provide(user.NewUserGetByIDUseCase)
+	container.Provide(user.NewUserGetAllUseCase)
 
 	container.Provide(migrationUseCase.NewUpgradeMigrationUseCase)
+
+	container.Provide(auth.NewCreateJwtUseCase)
+	container.Provide(auth.NewCheckJwtUseCase)
 }
 
 // presentation
-func injectServerControllers(container *adapter_di.Container) {
+func injectMiddlewares(container *adapter_di.Container) {
+	container.Provide(middleware.NewAuthMiddleware)
+}
+
+func injectHttpControllers(container *adapter_di.Container) {
 	container.Provide(controller.NewUserController)
+
+	container.Provide(controller.NewAuthController)
+
+	container.Provide(responder.NewResponder)
+	container.Provide(validator.NewValidator)
 }
 
 func injectCliControllers(container *adapter_di.Container) {
