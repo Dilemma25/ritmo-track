@@ -5,7 +5,6 @@ import (
 	"ritmotrack-backend/internal/application/dto"
 	userUseCase "ritmotrack-backend/internal/application/usecase/user"
 	"ritmotrack-backend/internal/presentation/http/apierror"
-	//"ritmotrack-backend/internal/presentation/http/parser"
 	"ritmotrack-backend/internal/presentation/http/responder"
 	"ritmotrack-backend/internal/presentation/http/shema"
 	"ritmotrack-backend/internal/presentation/http/validator"
