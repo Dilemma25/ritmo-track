@@ -6,15 +6,19 @@ import (
 	"ritmotrack-backend/internal/domain/repository"
 )
 
-type GetUserByIDUseCase struct {
+type GetUserByIDUseCase interface {
+	Execute(ctx context.Context, id uint) (*dto.UserDTO, error)
+}
+
+type getUserByIDUseCase struct {
 	repo repository.UserRepository
 }
 
-func NewUserGetByIDUseCase(repo repository.UserRepository) *GetUserByIDUseCase {
-	return &GetUserByIDUseCase{repo: repo}
+func NewUserGetByIDUseCase(repo repository.UserRepository) GetUserByIDUseCase {
+	return &getUserByIDUseCase{repo: repo}
 }
 
-func (ths *GetUserByIDUseCase) Execute(ctx context.Context, id uint) (*dto.UserDTO, error) {
+func (ths *getUserByIDUseCase) Execute(ctx context.Context, id uint) (*dto.UserDTO, error) {
 	user, _ := ths.repo.GetById(ctx, id)
 
 	userDTO := &dto.UserDTO{

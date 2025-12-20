@@ -8,7 +8,11 @@ import (
 	"ritmotrack-backend/internal/domain/repository"
 )
 
-type CreateUserUseCase struct {
+type CreateUserUseCase interface {
+	Execute(ctx context.Context, data userDTO.CreateUserDTO) (*userDTO.UserDTO, error)
+}
+
+type createUserUseCase struct {
 	repo   repository.UserRepository
 	hasher provider.HasherProvider
 }
@@ -16,18 +20,18 @@ type CreateUserUseCase struct {
 func NewUserCreateUseCase(
 	repo repository.UserRepository,
 	hasher provider.HasherProvider,
-) *CreateUserUseCase {
-	return &CreateUserUseCase{
+) CreateUserUseCase {
+	return &createUserUseCase{
 		repo:   repo,
 		hasher: hasher,
 	}
 }
 
-func (ths CreateUserUseCase) Execute(ctx context.Context, data userDTO.CreateUserDTO) (*userDTO.UserDTO, error) {
+func (ths *createUserUseCase) Execute(ctx context.Context, data userDTO.CreateUserDTO) (*userDTO.UserDTO, error) {
 
 	user := entity.NewUser(data.Name, data.Login, ths.hasher.Hash(data.Password))
 
-	if err := ths.repo.Create(ctx, user); err != nil {
+	if err := ths.repo.Store(ctx, user); err != nil {
 		return nil, err
 	}
 

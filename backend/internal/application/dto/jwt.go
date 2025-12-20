@@ -10,5 +10,5 @@ type JwtDTO struct {
 }
 
 type AuthJwtClaimsDTO struct {
-	UserId uint
+	UserId uint `json:"user_id"`
 }

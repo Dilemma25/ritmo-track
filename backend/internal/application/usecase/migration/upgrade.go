@@ -11,9 +11,9 @@ type upgradeMigrationUseCase struct {
 }
 
 func NewUpgradeMigrationUseCase(migrationProvider provider.MigrationProvider) UpgradeMigrationUseCase {
-	return upgradeMigrationUseCase{migrationProvider: migrationProvider}
+	return &upgradeMigrationUseCase{migrationProvider: migrationProvider}
 }
 
-func (ths upgradeMigrationUseCase) Execute() error {
+func (ths *upgradeMigrationUseCase) Execute() error {
 	return ths.migrationProvider.Upgrade()
 }

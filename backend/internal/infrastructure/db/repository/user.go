@@ -22,7 +22,7 @@ func NewUserRepository(db *pg.MainDB) repoInterface.UserRepository {
 	}
 }
 
-func (ths UserRepository) GetByLogin(ctx context.Context, login string) (*entity.User, error) {
+func (ths *UserRepository) GetByLogin(ctx context.Context, login string) (*entity.User, error) {
 	query, args, err := ths.db.GetSq().
 		Select("*").
 		From("users").
@@ -45,7 +45,7 @@ func (ths UserRepository) GetByLogin(ctx context.Context, login string) (*entity
 	return user, nil
 }
 
-func (ths UserRepository) Create(ctx context.Context, user *entity.User) error {
+func (ths *UserRepository) Store(ctx context.Context, user *entity.User) error {
 	query, args, err := ths.db.GetSq().
 		Insert("users").
 		Columns("name", "login", "password", "created_at").
@@ -70,7 +70,7 @@ func (ths UserRepository) Create(ctx context.Context, user *entity.User) error {
 	return nil
 }
 
-func (ths UserRepository) GetAll(ctx context.Context) ([]*entity.User, error) {
+func (ths *UserRepository) GetAll(ctx context.Context) ([]*entity.User, error) {
 	users := []*entity.User{
 		func() *entity.User { u := entity.NewUser("test1", "test1", ""); return u }(),
 		func() *entity.User { u := entity.NewUser("test2", "test2", ""); return u }(),
@@ -80,6 +80,6 @@ func (ths UserRepository) GetAll(ctx context.Context) ([]*entity.User, error) {
 	return users, nil
 }
 
-func (ths UserRepository) GetById(ctx context.Context, id uint) (*entity.User, error) {
+func (ths *UserRepository) GetById(ctx context.Context, id uint) (*entity.User, error) {
 	return entity.NewUser("test1", "test1", ""), nil
 }

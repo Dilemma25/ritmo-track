@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -39,4 +40,11 @@ func NewConfig() *Config {
 		JwtSecretKey: os.Getenv("JWT_SECRET_KEY"),
 		JwtTTL:       jwtTTL,
 	}
+}
+
+func (ths *Config) DbDNS() string {
+	return fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=UTC",
+		ths.DbHost, ths.DbUser, ths.DbPassword, ths.DbName, ths.DbPort,
+	)
 }
