@@ -2,7 +2,6 @@ package provider
 
 import (
 	"database/sql"
-	"fmt"
 	"ritmotrack-backend/asset"
 	"ritmotrack-backend/internal/application/provider"
 	"ritmotrack-backend/internal/infrastructure/config"
@@ -26,11 +25,8 @@ func NewMigrationProvider(config *config.Config) provider.MigrationProvider {
 	return &migrationProvider{config: config}
 }
 
-func (ths migrationProvider) getDB() (*sql.DB, error) {
-	db, err := sql.Open("postgres", fmt.Sprintf(
-		"host=%s user=%s password=%s dbname=%s sslmode=disable",
-		ths.config.DbHost, ths.config.DbUser, ths.config.DbPassword, ths.config.DbName,
-	))
+func (ths *migrationProvider) getDB() (*sql.DB, error) {
+	db, err := sql.Open("postgres", ths.config.DbDNS())
 
 	if err != nil {
 		return nil, err
@@ -39,7 +35,7 @@ func (ths migrationProvider) getDB() (*sql.DB, error) {
 	return db, nil
 }
 
-func (ths migrationProvider) Upgrade() error {
+func (ths *migrationProvider) Upgrade() error {
 	db, err := ths.getDB()
 
 	if err != nil {

@@ -31,7 +31,7 @@ func (ths *createJwtUseCase) Execute(ctx context.Context, data dto.CreateJwtDTO)
 	if user == nil {
 		user = entity.NewUser("test", data.Login, data.Password)
 
-		err = ths.repo.Create(ctx, user)
+		err = ths.repo.Store(ctx, user)
 
 		if err != nil {
 			return nil, err

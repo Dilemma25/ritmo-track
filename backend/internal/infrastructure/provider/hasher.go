@@ -12,7 +12,7 @@ func NewHasherProvider() provider.HasherProvider {
 	return &hasherProvider{}
 }
 
-func (ths *hasherProvider) Hash(password string) string {
+func (ths hasherProvider) Hash(password string) string {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 
 	if err != nil {
@@ -22,7 +22,7 @@ func (ths *hasherProvider) Hash(password string) string {
 	return string(bytes)
 }
 
-func (ths *hasherProvider) CompareHash(password, hash string) bool {
+func (ths hasherProvider) CompareHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }

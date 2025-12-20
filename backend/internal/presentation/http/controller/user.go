@@ -14,17 +14,17 @@ import (
 )
 
 type UserController struct {
-	UserCreateUseCase  *userUseCase.CreateUserUseCase
-	UserGetByIDUseCase *userUseCase.GetUserByIDUseCase
-	UserGetAllUseCase  *userUseCase.GetAllUsersUseCase
+	UserCreateUseCase  userUseCase.CreateUserUseCase
+	UserGetByIDUseCase userUseCase.GetUserByIDUseCase
+	UserGetAllUseCase  userUseCase.GetAllUsersUseCase
 	validator          *validator.Validator
 	responder          *responder.Responder
 }
 
 func NewUserController(
-	userCreateUseCase *userUseCase.CreateUserUseCase,
-	userGetByIDUseCase *userUseCase.GetUserByIDUseCase,
-	userGetAllUseCase *userUseCase.GetAllUsersUseCase,
+	userCreateUseCase userUseCase.CreateUserUseCase,
+	userGetByIDUseCase userUseCase.GetUserByIDUseCase,
+	userGetAllUseCase userUseCase.GetAllUsersUseCase,
 	validator *validator.Validator,
 	responder *responder.Responder,
 ) *UserController {
