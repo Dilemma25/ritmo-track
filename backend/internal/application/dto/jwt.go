@@ -6,9 +6,9 @@ type CreateJwtDTO struct {
 }
 
 type JwtDTO struct {
-	AccessToken string `json:"access_token"`
+	AccessToken string `json:"accessToken"`
 }
 
 type AuthJwtClaimsDTO struct {
-	UserId uint `json:"user_id"`
+	UserId uint `json:"userId"`
 }

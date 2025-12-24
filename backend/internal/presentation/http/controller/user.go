@@ -1,10 +1,14 @@
 package controller
 
 import (
+	"errors"
 	"net/http"
+	"ritmotrack-backend/internal/application/apperror"
 	"ritmotrack-backend/internal/application/dto"
 	userUseCase "ritmotrack-backend/internal/application/usecase/user"
 	"ritmotrack-backend/internal/presentation/http/apierror"
+	"ritmotrack-backend/internal/presentation/http/ctxvalue"
+	"ritmotrack-backend/internal/presentation/http/mapper"
 	"ritmotrack-backend/internal/presentation/http/responder"
 	"ritmotrack-backend/internal/presentation/http/shema"
 	"ritmotrack-backend/internal/presentation/http/validator"
@@ -14,31 +18,34 @@ import (
 )
 
 type UserController struct {
-	UserCreateUseCase  userUseCase.CreateUserUseCase
-	UserGetByIDUseCase userUseCase.GetUserByIDUseCase
-	UserGetAllUseCase  userUseCase.GetAllUsersUseCase
+	CreateUserUseCase  userUseCase.CreateUserUseCase
+	GetUserByIDUseCase userUseCase.GetUserByIDUseCase
+	GetUserAllUseCase  userUseCase.GetAllUsersUseCase
+	PatchUserUseCase   userUseCase.PatchUserUseCase
 	validator          *validator.Validator
 	responder          *responder.Responder
 }
 
 func NewUserController(
-	userCreateUseCase userUseCase.CreateUserUseCase,
-	userGetByIDUseCase userUseCase.GetUserByIDUseCase,
-	userGetAllUseCase userUseCase.GetAllUsersUseCase,
+	createUserUseCase userUseCase.CreateUserUseCase,
+	getUserByIDUseCase userUseCase.GetUserByIDUseCase,
+	getAllUsersUseCase userUseCase.GetAllUsersUseCase,
+	patchUserUseCase userUseCase.PatchUserUseCase,
 	validator *validator.Validator,
 	responder *responder.Responder,
 ) *UserController {
 	return &UserController{
-		UserCreateUseCase:  userCreateUseCase,
-		UserGetByIDUseCase: userGetByIDUseCase,
-		UserGetAllUseCase:  userGetAllUseCase,
+		CreateUserUseCase:  createUserUseCase,
+		GetUserByIDUseCase: getUserByIDUseCase,
+		GetUserAllUseCase:  getAllUsersUseCase,
+		PatchUserUseCase:   patchUserUseCase,
 		validator:          validator,
 		responder:          responder,
 	}
 }
 
 func (ths *UserController) GetAll(w http.ResponseWriter, r *http.Request) {
-	users, _ := ths.UserGetAllUseCase.Execute(r.Context())
+	users, _ := ths.GetUserAllUseCase.Execute(r.Context())
 
 	ths.responder.ResponseOk(w, users)
 }
@@ -53,7 +60,7 @@ func (ths *UserController) GetByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, _ := ths.UserGetByIDUseCase.Execute(r.Context(), uint(idUint))
+	user, _ := ths.GetUserByIDUseCase.Execute(r.Context(), uint(idUint))
 
 	ths.responder.ResponseOk(w, user)
 }
@@ -69,15 +76,55 @@ func (ths *UserController) Create(w http.ResponseWriter, r *http.Request) {
 
 	userDTO := dto.CreateUserDTO{
 		Login:    req.Login,
-		Name:     req.Name,
 		Password: req.Password,
 	}
 
-	user, err := ths.UserCreateUseCase.Execute(r.Context(), userDTO)
+	user, err := ths.CreateUserUseCase.Execute(r.Context(), userDTO)
 	if err != nil {
+
+		if errors.Is(err, apperror.ErrUserAlreadyExists) {
+			ths.responder.ResponseError(w, apierror.NewErrUserAlreadyExists())
+			return
+		}
+
 		ths.responder.ResponseError(w, apierror.NewErrInternal(err))
 		return
 	}
 
-	ths.responder.ResponseOk(w, user)
+	response := mapper.CreateUserResponseFromDTO(user)
+
+	ths.responder.ResponseOk(w, response)
+}
+
+func (ths *UserController) Patch(w http.ResponseWriter, r *http.Request) {
+	var req shema.PatchUserRequest
+	//TODO проверять пустой боди и выбрасывать 400
+	if err := ths.validator.ValidateBody(r, &req); err != nil {
+		ths.responder.ResponseError(w, err)
+
+		return
+	}
+
+	userId, ok := r.Context().Value(ctxvalue.UserID).(uint)
+
+	if !ok {
+		ths.responder.ResponseError(w, apierror.NewErrUserContextNotFound())
+	}
+
+	patchDTO := dto.PatchUserDTO{
+		Name:     req.Name,
+		Password: req.Password,
+	}
+
+	if err := ths.PatchUserUseCase.Execute(r.Context(), userId, patchDTO); err != nil {
+
+		if errors.Is(err, apperror.ErrUserNotFound) {
+			ths.responder.ResponseError(w, apierror.NewErrUserNotFound())
+		}
+
+		ths.responder.ResponseError(w, apierror.NewErrInternal(err))
+		return
+	}
+
+	ths.responder.ResponseNoContent(w)
 }

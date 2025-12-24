@@ -9,7 +9,7 @@ type ErrInvalidUrlParameter struct {
 	err error
 }
 
-func NewErrInvalidUrlParameter(err error) *ErrInvalidUrlParameter {
+func NewErrInvalidUrlParameter(err error) ApiError {
 	return &ErrInvalidUrlParameter{err: err}
 }
 

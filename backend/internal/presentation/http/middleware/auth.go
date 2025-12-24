@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"ritmotrack-backend/internal/application/usecase/auth"
 	"ritmotrack-backend/internal/presentation/http/apierror"
+	"ritmotrack-backend/internal/presentation/http/ctxvalue"
 	"ritmotrack-backend/internal/presentation/http/responder"
 	"strings"
 )
@@ -55,8 +56,8 @@ func (ths *AuthMiddleware) Middleware(next http.Handler) http.Handler {
 
 			return
 		}
-		
-		ctx := context.WithValue(r.Context(), "userId", tokenClaims.UserId)
+
+		ctx := context.WithValue(r.Context(), ctxvalue.UserID, tokenClaims.UserId)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"errors"
 	"net/http"
+	"ritmotrack-backend/internal/application/apperror"
 	"ritmotrack-backend/internal/application/dto"
 	"ritmotrack-backend/internal/application/usecase/auth"
 	"ritmotrack-backend/internal/presentation/http/apierror"
@@ -48,6 +50,14 @@ func (ths *AuthController) CreateJwt(w http.ResponseWriter, r *http.Request) {
 	token, err := ths.createJwtUseCase.Execute(r.Context(), jwtDto)
 
 	if err != nil {
+		if errors.Is(err, apperror.ErrUserNotFound) {
+			ths.responder.ResponseError(w, apierror.NewErrUserNotFound())
+		}
+
+		if errors.Is(err, apperror.ErrInvalidPassword) {
+			ths.responder.ResponseError(w, apierror.NewErrInvalidPassword())
+		}
+
 		ths.responder.ResponseError(w, apierror.NewErrInternal(err))
 
 		return
@@ -61,5 +71,5 @@ func (ths *AuthController) CreateJwt(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ths *AuthController) CheckJwt(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNoContent)
+	ths.responder.ResponseNoContent(w)
 }

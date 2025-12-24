@@ -10,7 +10,7 @@ type ErrInternal struct {
 	err error
 }
 
-func NewErrInternal(err error) *ErrInternal {
+func NewErrInternal(err error) ApiError {
 	return &ErrInternal{err: err}
 }
 

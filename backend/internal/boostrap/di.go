@@ -75,6 +75,7 @@ func injectUseCases(container *adapter_di.Container) {
 	container.Provide(user.NewUserCreateUseCase)
 	container.Provide(user.NewUserGetByIDUseCase)
 	container.Provide(user.NewUserGetAllUseCase)
+	container.Provide(user.NewPatchUserUseCase)
 
 	container.Provide(migrationUseCase.NewUpgradeMigrationUseCase)
 

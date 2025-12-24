@@ -64,7 +64,7 @@ func (ths *Validator) ValidateBody(r *http.Request, d any) apierror.ApiError {
 func jsonFieldName(d any, fe validator.FieldError) string {
 	t := reflect.TypeOf(d).Elem() // Тип структуры
 	if f, ok := t.FieldByName(fe.StructField()); ok {
-		tag := f.Tag.Get("json")
+		tag := strings.Split(f.Tag.Get("json"), ",")[0]
 
 		name := strings.Split(tag, ",")[0]
 

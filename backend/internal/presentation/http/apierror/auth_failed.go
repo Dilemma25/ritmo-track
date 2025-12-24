@@ -9,7 +9,7 @@ type ErrAuthFailed struct {
 	message string
 }
 
-func NewErrAuthFailed(message string) *ErrAuthFailed {
+func NewErrAuthFailed(message string) ApiError {
 	return &ErrAuthFailed{message: message}
 }
 

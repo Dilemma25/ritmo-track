@@ -48,8 +48,17 @@ func (ths *UserRepository) GetByLogin(ctx context.Context, login string) (*entit
 func (ths *UserRepository) Store(ctx context.Context, user *entity.User) error {
 	query, args, err := ths.db.GetSq().
 		Insert("users").
-		Columns("name", "login", "password", "created_at").
-		Values(user.GetName(), user.GetLogin(), user.GetPassword(), user.GetCreatedAt()).
+		Columns(
+			"name",
+			"login",
+			"password",
+			"created_at",
+		).
+		Values(
+			user.GetName(),
+			user.GetLogin(),
+			user.GetPassword(),
+			user.GetCreatedAt()).
 		Suffix("RETURNING id").
 		ToSql()
 
@@ -81,5 +90,46 @@ func (ths *UserRepository) GetAll(ctx context.Context) ([]*entity.User, error) {
 }
 
 func (ths *UserRepository) GetById(ctx context.Context, id uint) (*entity.User, error) {
-	return entity.NewUser("test1", "test1", ""), nil
+	query, args, err := ths.db.GetSq().
+		Select("*").
+		From("users").
+		Where(squirrel.Eq{"id": id}).
+		ToSql()
+
+	if err != nil {
+		return nil, err
+	}
+
+	user, err := mapper.CreateUserFromRow(ths.db.GetPool().QueryRow(ctx, query, args...))
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func (ths *UserRepository) Update(ctx context.Context, user *entity.User) error {
+	query, args, err := ths.db.GetSq().
+		Update("users").
+		Set("name", user.GetName()).
+		Set("password", user.GetPassword()).
+		Where(squirrel.Eq{"id": user.GetId()}).
+		ToSql()
+
+	if err != nil {
+		return err
+	}
+
+	_, err = ths.db.GetPool().Exec(ctx, query, args...)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
