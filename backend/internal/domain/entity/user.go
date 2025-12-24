@@ -1,6 +1,10 @@
 package entity
 
-import "time"
+import (
+	"errors"
+	"strings"
+	"time"
+)
 
 type User struct {
 	id        uint
@@ -33,24 +37,42 @@ func (ths *User) GetName() string {
 	return ths.name
 }
 
-func (ths *User) SetName(name string) {
+func (ths *User) SetName(name string) error {
+	//TODO сделать ошибки и валидацию для домена
+	if strings.TrimSpace(name) == "" {
+		return errors.New("недопустимое имя")
+	}
+
 	ths.name = name
+	return nil
 }
 
 func (ths *User) GetLogin() string {
 	return ths.login
 }
 
-func (ths *User) SetLogin(login string) {
+func (ths *User) SetLogin(login string) error {
+	//TODO сделать ошибки и валидацию для домена
+	if strings.TrimSpace(login) == "" {
+		return errors.New("недопустимый логин")
+	}
+
 	ths.login = login
+	return nil
 }
 
 func (ths *User) GetPassword() string {
 	return ths.password
 }
 
-func (ths *User) SetPassword(password string) {
+func (ths *User) SetPassword(password string) error {
+	//TODO сделать ошибки и валидацию для домена
+	if strings.TrimSpace(password) == "" {
+		return errors.New("недопустимый пароль")
+	}
+
 	ths.password = password
+	return nil
 }
 
 func (ths *User) GetCreatedAt() time.Time {

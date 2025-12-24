@@ -6,5 +6,5 @@ type AuthRequest struct {
 }
 
 type AuthResponse struct {
-	Access string `json:"access_token"`
+	Access string `json:"accessToken"`
 }

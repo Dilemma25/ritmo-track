@@ -9,7 +9,7 @@ type ErrInvalidJson struct {
 	err error
 }
 
-func NewErrInvalidJson(err error) *ErrInvalidJson {
+func NewErrInvalidJson(err error) ApiError {
 	return &ErrInvalidJson{err: err}
 }
 

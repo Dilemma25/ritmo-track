@@ -32,6 +32,7 @@ func RegisterRouters(r *chi.Mux, container *adapter_di.Container) {
 					r.Use(authMiddleware.Middleware)
 
 					r.Get("/", authController.CheckJwt)
+					r.Patch("/patch", userController.Patch)
 				})
 			})
 		})

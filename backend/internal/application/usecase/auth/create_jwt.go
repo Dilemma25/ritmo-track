@@ -2,9 +2,9 @@ package auth
 
 import (
 	"context"
+	"ritmotrack-backend/internal/application/apperror"
 	"ritmotrack-backend/internal/application/dto"
 	"ritmotrack-backend/internal/application/provider"
-	"ritmotrack-backend/internal/domain/entity"
 	"ritmotrack-backend/internal/domain/repository"
 )
 
@@ -15,27 +15,34 @@ type CreateJwtUseCase interface {
 type createJwtUseCase struct {
 	jwtProvider provider.JwtProvider
 	repo        repository.UserRepository
+	hasher      provider.HasherProvider
 }
 
-func NewCreateJwtUseCase(jwtProvider provider.JwtProvider, repo repository.UserRepository) CreateJwtUseCase {
-	return &createJwtUseCase{jwtProvider: jwtProvider, repo: repo}
+func NewCreateJwtUseCase(
+	jwtProvider provider.JwtProvider,
+	repo repository.UserRepository,
+	hasher provider.HasherProvider,
+) CreateJwtUseCase {
+	return &createJwtUseCase{
+		jwtProvider: jwtProvider,
+		repo:        repo,
+		hasher:      hasher,
+	}
 }
 
-func (ths *createJwtUseCase) Execute(ctx context.Context, data dto.CreateJwtDTO) (*dto.JwtDTO, error) {
-	user, err := ths.repo.GetByLogin(ctx, data.Login)
+func (ths *createJwtUseCase) Execute(ctx context.Context, dto dto.CreateJwtDTO) (*dto.JwtDTO, error) {
+	user, err := ths.repo.GetByLogin(ctx, dto.Login)
 
 	if err != nil {
 		return nil, err
 	}
 
 	if user == nil {
-		user = entity.NewUser("test", data.Login, data.Password)
+		return nil, apperror.ErrUserNotFound
+	}
 
-		err = ths.repo.Store(ctx, user)
-
-		if err != nil {
-			return nil, err
-		}
+	if !ths.hasher.CompareHashAndPassword(user.GetPassword(), dto.Password) {
+		return nil, apperror.ErrInvalidPassword
 	}
 
 	tokenDTO, err := ths.jwtProvider.CreateToken(user.GetId())

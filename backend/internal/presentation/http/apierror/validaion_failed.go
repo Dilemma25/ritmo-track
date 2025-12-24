@@ -9,7 +9,7 @@ type ErrValidationFailed struct {
 	details any
 }
 
-func NewErrValidationFailed(errMap map[string]string) *ErrValidationFailed {
+func NewErrValidationFailed(errMap map[string]string) ApiError {
 	details := make(map[string]string)
 
 	for key, value := range errMap {

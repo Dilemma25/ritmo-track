@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"ritmotrack-backend/internal/application/apperror"
 	userDTO "ritmotrack-backend/internal/application/dto"
 	"ritmotrack-backend/internal/application/provider"
 	"ritmotrack-backend/internal/domain/entity"
@@ -27,11 +28,21 @@ func NewUserCreateUseCase(
 	}
 }
 
-func (ths *createUserUseCase) Execute(ctx context.Context, data userDTO.CreateUserDTO) (*userDTO.UserDTO, error) {
+func (ths *createUserUseCase) Execute(ctx context.Context, dto userDTO.CreateUserDTO) (*userDTO.UserDTO, error) {
 
-	user := entity.NewUser(data.Name, data.Login, ths.hasher.Hash(data.Password))
+	user := entity.NewUser("DefaultName", dto.Login, ths.hasher.Hash(dto.Password))
 
-	if err := ths.repo.Store(ctx, user); err != nil {
+	existUser, err := ths.repo.GetByLogin(ctx, user.GetLogin())
+
+	if err != nil {
+		return nil, err
+	}
+
+	if existUser != nil {
+		return nil, apperror.ErrUserAlreadyExists
+	}
+
+	if err = ths.repo.Store(ctx, user); err != nil {
 		return nil, err
 	}
 

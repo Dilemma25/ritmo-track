@@ -22,6 +22,10 @@ func (ths *Responder) ResponseError(w http.ResponseWriter, error apierror.ApiErr
 	ths.responseJson(w, response, status)
 }
 
+func (ths *Responder) ResponseNoContent(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusNoContent)
+}
+
 func (ths *Responder) responseJson(w http.ResponseWriter, data any, httpStatus int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(httpStatus)

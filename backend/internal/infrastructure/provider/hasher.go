@@ -22,7 +22,7 @@ func (ths hasherProvider) Hash(password string) string {
 	return string(bytes)
 }
 
-func (ths hasherProvider) CompareHash(password, hash string) bool {
+func (ths hasherProvider) CompareHashAndPassword(hash string, password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }
