@@ -55,14 +55,8 @@ func (ths *AuthMiddleware) Middleware(next http.Handler) http.Handler {
 
 			return
 		}
-
-		userIDKey, ok := r.Context().Value("userID").(uint)
-
-		if !ok {
-
-		}
-
-		ctx := context.WithValue(r.Context(), userIDKey, tokenClaims.UserId)
+		
+		ctx := context.WithValue(r.Context(), "userId", tokenClaims.UserId)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
