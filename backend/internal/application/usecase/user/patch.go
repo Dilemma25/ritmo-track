@@ -9,7 +9,7 @@ import (
 )
 
 type PatchUserUseCase interface {
-	Execute(ctx context.Context, userID uint, dto dto.PatchUserDTO) error
+	Execute(ctx context.Context, userId uint, dto dto.PatchUserDTO) error
 }
 
 type patchUserUseCase struct {

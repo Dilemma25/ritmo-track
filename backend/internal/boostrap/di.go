@@ -72,13 +72,18 @@ func injectRepositories(container *adapter_di.Container) {
 
 // application
 func injectUseCases(container *adapter_di.Container) {
+	//User
 	container.Provide(user.NewUserCreateUseCase)
 	container.Provide(user.NewUserGetByIDUseCase)
 	container.Provide(user.NewUserGetAllUseCase)
 	container.Provide(user.NewPatchUserUseCase)
 
+	//Migration
 	container.Provide(migrationUseCase.NewUpgradeMigrationUseCase)
+	container.Provide(migrationUseCase.NewDownMigrationUseCase)
+	container.Provide(migrationUseCase.NewResetMigrationUseCase)
 
+	//Auth
 	container.Provide(auth.NewCreateJwtUseCase)
 	container.Provide(auth.NewCheckJwtUseCase)
 }

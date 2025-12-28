@@ -1,11 +1,11 @@
 -- +goose Up
-CREATE TABLE users (
+CREATE TABLE public.users (
    id SERIAL PRIMARY KEY,
-   name TEXT NOT NULL,
-   login TEXT NOT NULL,
-   password TEXT NOT NULL,
-   created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+   name VARCHAR(50) NOT NULL,
+   login VARCHAR(50) NOT NULL UNIQUE,
+   password VARCHAR(255) NOT NULL,
+   created_at TIMESTAMP WITH TIME ZONE
 );
 
 -- +goose Down
-DROP TABLE users;
+DROP TABLE public.users;

@@ -26,8 +26,14 @@ func NewMigrationProvider(config *config.Config) provider.MigrationProvider {
 }
 
 func (ths *migrationProvider) getDB() (*sql.DB, error) {
-	db, err := sql.Open("postgres", ths.config.DbDNS())
+	db, err := sql.Open("pgx", ths.config.DbDNS())
 
+	//db, err := sql.Open("pgx", fmt.Sprintf(
+	//	"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+	//	ths.config.DbHost, ths.config.DbPort, ths.config.DbUser,
+	//	ths.config.DbPassword, ths.config.DbName,
+	//))
+	//
 	if err != nil {
 		return nil, err
 	}
@@ -43,6 +49,37 @@ func (ths *migrationProvider) Upgrade() error {
 	}
 
 	if err = goose.Up(db, config.MigrationDir); err != nil {
+		_ = db.Close()
+		return err
+	}
+
+	return db.Close()
+}
+
+func (ths *migrationProvider) Down() error {
+	db, err := ths.getDB()
+
+	if err != nil {
+		return err
+	}
+
+	if err = goose.Down(db, config.MigrationDir); err != nil {
+		_ = db.Close()
+		return err
+	}
+
+	return db.Close()
+}
+
+func (ths *migrationProvider) Reset() error {
+	db, err := ths.getDB()
+
+	if err != nil {
+		return err
+	}
+
+	if err = goose.Reset(db, config.MigrationDir); err != nil {
+		_ = db.Close()
 		return err
 	}
 
